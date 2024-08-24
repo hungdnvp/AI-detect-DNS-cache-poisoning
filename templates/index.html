@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHẦN MỀM PHÁT HIỆN TẤN CÔNG DNS CACHE POISONING</title>
+    <!-- Kết nối đến file CSS bên ngoài -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Thêm logo phía trên tiêu đề -->
+      <div class="logo">
+        <img
+          src="{{ url_for('static', filename='images/Logo_MTA_new.png') }}"
+          alt="Logo"
+        />
+      </div>
+
+      <h1>PHẦN MỀM PHÁT HIỆN TẤN CÔNG DNS CACHE POISONING</h1>
+
+      <div class="tabs-menu">
+        <button
+          id="realtime-tab-btn"
+          class="active"
+          onclick="showTab('realtime')"
+        >
+          Realtime
+        </button>
+        <button id="pcap-tab-btn" class="inactive" onclick="showTab('pcap')">
+          Phân tích File PCAP
+        </button>
+      </div>
+
+      <!-- Nội dung tab Realtime -->
+      <div id="realtime" class="tab-content active">
+        <h2>Realtime</h2>
+        <div class="ip-dns">
+          <h3>Địa chỉ ip DNS server: {{ipDNS}}</h3>
+        </div>
+        <form id="capture-form" method="POST" action="/start_capture">
+          <div class="realtime-list">
+            <h3>Danh sách địa chỉ IP</h3>
+            <div class="list-ip">
+              <!-- Thêm tiêu đề cho danh sách IP -->
+              {% for ip in ipTargets %}
+              <label for="{{ip}}">
+                <input
+                  type="checkbox"
+                  id="{{ip}}"
+                  name="ip_list[]"
+                  value="{{ip}}"
+                />
+                {{ip}}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+          <button id="start-button" type="submit" class="button-active">
+            Bắt đầu theo dõi
+          </button>
+          <button
+            id="stop-button"
+            type="button"
+            class="button-disabled"
+            disabled
+          >
+            Dừng theo dõi
+          </button>
+          <div class="result">
+            <label for="result">Kết quả:</label>
+            <textarea id="result" readonly>{{ result_realtime }}</textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Nội dung tab Phân tích File PCAP -->
+      <div id="pcap" class="tab-content">
+        <h2>Phân tích File PCAP</h2>
+        <form id="analyzefile-form" class="pcap-form">
+          <div>
+            <label for="dns_server_ip">Địa chỉ IP DNS Server:</label>
+            <input type="text" id="dns_server_ip" name="ipdns" required />
+          </div>
+          <div>
+            <label for="target_ip">Địa chỉ IP Máy cần theo dõi:</label>
+            <input type="text" id="target_ip" name="target" required />
+          </div>
+          <div>
+            <label for="pcap_file">Chọn file PCAP:</label>
+            <input
+              type="file"
+              id="pcap_file"
+              name="pcap_file"
+              accept=".pcapng"
+              required
+            />
+          </div>
+          <button id="submit-file" type="button">Phân tích</button>
+        </form>
+        <div id="loading" style="display: none">Đang phân tích...</div>
+        <div class="result">
+          <label for="result_pcap">Kết quả:</label>
+          <textarea id="result_pcap" readonly>{{ result_pcap }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kết nối với file JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
