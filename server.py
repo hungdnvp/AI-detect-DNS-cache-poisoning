@@ -59,15 +59,16 @@ def analyze():
     # detection_thread.start()
     result = 'Kết quả phân tích từ cập nhật mới nhất ' + filepath + '\n'
     predicted = predict(filepath, ipdns,targets)
+    nonAttack = 1
     for ip in predicted:
         if predicted[ip]:
+            nonAttack = 0
             for acc in predicted[ip]:
-                result += str(ip) + '---- Đã tấn công DNS Cache ('+ str(acc) +'%)\n'
+                result += str(ip) + '---- Đã tấn công DNS Cache Poisoning ('+ str(acc) +'%)\n'
 
-    if result:
-        socketio.emit('update', {'result': result})
-    else:
-        socketio.emit('update', {'result': 'Không có tấn công DNS Cache\n'})
+    if nonAttack :
+        result += 'Không có tấn công DNS Cache Poisoning\n'
+    socketio.emit('update', {'result': result})
     # AI_detection(file_path,target)
     return '', 204
 
