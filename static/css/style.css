@@ -27,7 +27,7 @@ body {
 /* Kiểu dáng nút khi bị disable */
 .button-disabled {
   background-color: #cccccc; /* Màu xám nhạt */
-  color: #666666; /* Màu chữ xám đậm */
+  color: #f4eded; /* Màu chữ xám đậm */
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -43,7 +43,7 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  width: 600px;
+  width: 1000px;
   max-width: 90%;
 }
 
@@ -186,7 +186,9 @@ button {
   transition: background-color 0.3s ease;
   margin-top: 10px;
 }
-
+.stop-button {
+  background-color: red !important;
+}
 button:hover {
   background-color: #45a049;
 }

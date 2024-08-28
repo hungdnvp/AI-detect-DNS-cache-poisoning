@@ -1,26 +1,18 @@
 from flask import Flask, jsonify, request, render_template
-import multiprocessing
+import multiprocessing, threading
 from captrue_pcapng_process import capture_packets
 from predict_attack_dns import predict
 import subprocess, os
 from flask_socketio import SocketIO
+from scan_ip import scan_network, get_ip_local
+
 app = Flask(__name__)
 socketio = SocketIO(app)
 # Biến toàn cục để điều khiển việc bắt gói tin
 
 capture_process = None
-def wlan_ip():
-    result=subprocess.run('ipconfig',stdout=subprocess.PIPE,text=True).stdout.lower()
-    scan=0
-    for i in result.split('\n'):
-        if 'wireless lan adapter wi-fi' in i: #use "wireless" or wireless adapters and "ethernet" for wired connections
-            scan=1
-        if scan:
-            if 'ipv4' in i:
-                return i.split(':')[1].strip()
-ipMyDns = wlan_ip()  
-def scanIpClient():
-    pass
+
+ipMyDns = get_ip_local()  
 ipTargets = ['192.168.10.1','192.168.10.40']          
 @app.route('/')
 def index():
@@ -87,7 +79,6 @@ def analyzeFile():
     
     # Xử lý file tải lên
     file = request.files.get('pcap_file')
-    result = 'Không phát hiện tấn công DNS cache poisoning\n'
     if file:
       # Lưu file tải lên vào thư mục tạm thời
         upload_folder = 'uploads/'
@@ -97,15 +88,17 @@ def analyzeFile():
       # Lưu file vào thư mục uploads
         filepath = os.path.join(upload_folder, file.filename)
         file.save(filepath)
-        predicted = predict(filepath, ipdns,[target])
-        if predicted[target]:
+        detection_thread = threading.Thread(target=sub_predictFile, args=(filepath, ipdns,target))
+        detection_thread.start()
+    return '', 204
+def sub_predictFile(file_path, ipdns, target):
+    result = 'Không phát hiện tấn công DNS cache poisoning\n'
+    predicted = predict(file_path,ipdns,[target])
+    if predicted[target]:
             result = ''
             for acc in predicted[target]:
-                result += str(target) + '---- Đã tấn công dns cache ('+ str(acc) +'%)\n'
-        return jsonify({"predicted": result}), 200
-    else:
-        return jsonify({"error": "Không có file tải lên"}), 400
-        
-    
+                result += 'Phát hiện tấn công DNS Cache Poisoning - session of ip ' + str(target) +' ('+ str(acc) +'%)\n'
+    socketio.emit('updateFile', {'result': result})
+    return 1
 if __name__ == '__main__':
     app.run(debug=True)

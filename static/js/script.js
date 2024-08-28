@@ -74,7 +74,7 @@ function stopCapture() {
   });
   document.getElementById("result").value += "Đã dừng theo dõi.\n";
 }
-
+//---------------------->>>>>>>>>>>>>>>>>>>>>>>   SOCKET<<<<<<<<<<<<<<<<<<<<<<<<<<<<-------------
 const socket = io();
 
 socket.on("update", function (data) {
@@ -84,14 +84,28 @@ socket.on("update", function (data) {
   resultArea.value += newLine;
   resultArea.scrollTop = resultArea.scrollHeight; // Cuộn xuống cuối textarea
 });
+socket.on("updateFile", function (data) {
+  const resultArea = document.getElementById("result_pcap");
+  const newLine = `${data.result}`;
+  resultArea.value = newLine;
+  resultArea.scrollTop = resultArea.scrollHeight; // Cuộn xuống cuối textarea
+
+  var loadingMessage = document.getElementById("loading");
+  loadingMessage.style.display = "none";
+  var buttonAnalyze = document.getElementById("submit-file");
+  buttonAnalyze.disabled = false;
+  buttonAnalyze.style.cursor = "pointer";
+});
 
 document.getElementById("submit-file").addEventListener("click", function () {
   const formData = new FormData(document.getElementById("analyzefile-form"));
-  this.disabled = true;
-
-  // Hiển thị hiệu ứng loading
-  var loadingMessage = document.getElementById("loading");
-  loadingMessage.style.display = "block";
+  if (formData.get("pcap_file").name) {
+    this.disabled = true;
+    this.style.cursor = "not-allowed";
+    // Hiển thị hiệu ứng loading
+    var loadingMessage = document.getElementById("loading");
+    loadingMessage.style.display = "block";
+  }
   // clear texarea
   document.getElementById("result_pcap").value = "";
   // Gửi dữ liệu form đến server
@@ -101,11 +115,6 @@ document.getElementById("submit-file").addEventListener("click", function () {
     data: formData,
     processData: false, // Ngăn jQuery tự động xử lý dữ liệu
     contentType: false, // Ngăn jQuery thiết lập content-type
-    success: function (response) {
-      document.getElementById("result_pcap").value = response.predicted;
-      loadingMessage.style.display = "none";
-      this.disabled = false;
-    },
     error: function (xhr) {
       console.log(xhr);
     },

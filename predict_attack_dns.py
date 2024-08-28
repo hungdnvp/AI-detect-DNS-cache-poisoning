@@ -108,7 +108,7 @@ def AIprediction(data_bytes):
     X_tmp = np.array(list(set(tmp)),dtype=np.uint8).reshape((len(tmp),window_size,32))
     X = X_tmp.reshape(X_tmp.shape[0], X_tmp.shape[1],X_tmp.shape[2], 1)
     X_predict = worker(X,window_size)
-    model=tf.keras.models.load_model("model/classifier-1--3.h5",custom_objects={"metric":F1Score(num_classes=2)})
+    model=tf.keras.models.load_model("model/classifier-CNN.h5",custom_objects={"metric":F1Score(num_classes=2)})
     predictions = model.predict(X_predict)
     for i in predictions:
         if(i[1]>0.5):
