@@ -1,7 +1,10 @@
 from scapy.all import ARP, Ether, srp
-import time, subprocess
-def scan_network(ip_range):
+import subprocess
+def scan_ipLocal():
+    # Lay ip cua may hien tai
+    myIp = get_myIpLocal()
     # Tạo gói ARP request
+    ip_range = '192.168.17.0/24'
     arp = ARP(pdst=ip_range)
     ether = Ether(dst="ff:ff:ff:ff:ff:ff")
     packet = ether/arp
@@ -14,10 +17,11 @@ def scan_network(ip_range):
     for sent, received in result:
         #devices.append({'ip': received.psrc})
         devices.append(received.psrc)
+    if myIp in devices:
+        devices.remove(myIp)
+    return myIp, devices
 
-    return devices
-
-def get_ip_local():
+def get_myIpLocal():
     result=subprocess.run('ipconfig',stdout=subprocess.PIPE,text=True).stdout.lower()
     scan=0
     for i in result.split('\n'):
@@ -28,8 +32,8 @@ def get_ip_local():
                 return i.split(':')[1].strip()
             
 if __name__ == "__main__":
-    ip_range = "192.168.148.0/24"  # Thay đổi dải IP phù hợp với mạng của bạn
-    devices = scan_network(ip_range)
+    
+    myIp, devices = scan_ipLocal()
     print(devices)
     #print("Các thiết bị trong mạng:")
     #for device in devices:

@@ -4,7 +4,7 @@ from captrue_pcapng_process import capture_packets
 from predict_attack_dns import predict
 import subprocess, os
 from flask_socketio import SocketIO
-from scan_ip import scan_network, get_ip_local
+from scan_ip import scan_ipLocal
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -12,10 +12,10 @@ socketio = SocketIO(app)
 
 capture_process = None
 
-ipMyDns = get_ip_local()  
-ipTargets = ['192.168.10.1','192.168.10.40']          
+ipMyDns, ipTargets = scan_ipLocal()        
 @app.route('/')
 def index():
+    ipMyDns, ipTargets = scan_ipLocal()
     return render_template('index.html',ipDNS = ipMyDns, ipTargets = ipTargets)
 
 
@@ -57,7 +57,7 @@ def analyze():
     filepath = data.get('file_path')
     # detection_thread = threading.Thread(target=predict, args=(filepath, ipdns,targets))
     # detection_thread.start()
-    result = ''
+    result = 'Kết quả phân tích từ cập nhật mới nhất ' + filepath + '\n'
     predicted = predict(filepath, ipdns,targets)
     for ip in predicted:
         if predicted[ip]:

@@ -33,7 +33,7 @@ document.getElementById("start-button").addEventListener("click", function () {
 
   resultArea = document.getElementById("result");
   resultArea.value +=
-    "Đang theo dõi !\n Không có cuộc tấn công DNS cache poisoning";
+    "Đang theo dõi !\nKhông có cuộc tấn công DNS cache poisoning\n";
   resultArea.scrollTop = resultArea.scrollHeight;
 
   const formData = new FormData(document.getElementById("capture-form"));
@@ -80,7 +80,23 @@ const socket = io();
 socket.on("update", function (data) {
   const resultArea = document.getElementById("result");
 
-  const newLine = `${data.result}`;
+  function getCurrentDateTime() {
+    const now = new Date();
+
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const year = now.getFullYear();
+
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const formattedDate = `${day}/${month}/${year}`;
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    return `${formattedDate} - ${formattedTime}`;
+  }
+  const newLine = getCurrentDateTime() + "\n" + `${data.result}`;
   resultArea.value += newLine;
   resultArea.scrollTop = resultArea.scrollHeight; // Cuộn xuống cuối textarea
 });

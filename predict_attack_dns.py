@@ -112,5 +112,8 @@ def AIprediction(data_bytes):
     predictions = model.predict(X_predict)
     for i in predictions:
         if(i[1]>0.5):
-          attack_session_number.append(i[1]*100)
+          attack_session_number.append(round(i[1],2)*100)
     return attack_session_number
+
+if __name__ == "__main__":
+    print('a')

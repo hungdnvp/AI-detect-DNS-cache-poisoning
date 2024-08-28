@@ -7,11 +7,11 @@ def capture_packets(targets, ipMyDns):
     """
     Hàm này sẽ liên tục bắt gói tin và lưu vào các file pcapng trong thư mục chỉ định.
     """
-    interface = pyshark.LiveCapture().interfaces[0]
-    capture_duration = 15
-    if not os.path.exists('captures'):
-    # Nếu chưa tồn tại, tạo thư mục mới
-        os.makedirs('captures')
+    interface = '\\Device\\NPF_{4E81E876-F471-4253-86AB-D1D5E64A0EB5}'
+    capture_duration = 45
+    # if not os.path.exists('captures'):
+    # # Nếu chưa tồn tại, tạo thư mục mới
+    #     os.makedirs('captures')
     while True:
         timestamp = int(time.time())
         output_file = os.path.join('captures', f"capture_{timestamp}.pcapng")
