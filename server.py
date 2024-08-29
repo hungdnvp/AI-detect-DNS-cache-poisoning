@@ -64,7 +64,7 @@ def analyze():
         if predicted[ip]:
             nonAttack = 0
             for acc in predicted[ip]:
-                result += str(ip) + '---- Đã tấn công DNS Cache Poisoning ('+ str(acc) +'%)\n'
+                result += 'Phát hiện tấn công DNS Cache Poisoning ->session client'+ str(ip) + '('+ str(acc) +'%)\n'
 
     if nonAttack :
         result += 'Không có tấn công DNS Cache Poisoning\n'
